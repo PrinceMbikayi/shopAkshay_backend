@@ -13,6 +13,15 @@ import errorMiddleware from './middlewares/errors.js'
 
 const app = express();
 
+// CORS configuration
+const corsOptions = {
+    origin: 'http://localhost:3000', // URL de votre frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true // Si vous utilisez des cookies ou des authentifications
+};
+
+app.use(cors(corsOptions)); // Appliquer la configuration CORS
+
 // Handle Uncaught exceptions
 process.on('uncaughtException', (err) => {
     console.log(`ERROR: ${err}`);
