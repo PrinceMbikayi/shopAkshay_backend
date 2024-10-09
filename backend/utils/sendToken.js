@@ -9,7 +9,7 @@ export default (user, statusCode, res) => {
       ),
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",  // Cookie sécurisé en production
-      //sameSite: "None",    // Permet les cookies inter-domaines (frontend/backend sur différents domaines)
+      sameSite: "None",    // Permet les cookies inter-domaines (frontend/backend sur différents domaines)
   };
 
   res.status(statusCode).cookie("token", token, options).json({
