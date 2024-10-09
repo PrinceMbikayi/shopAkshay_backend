@@ -16,10 +16,12 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-    origin: ['http://localhost:3000', 'https://ritzglobal.org/'], // URL de votre frontend
+    origin: ['http://localhost:3000', 'https://ritzglobal.org'], // URL de votre frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true // Si vous utilisez des cookies ou des authentifications
 };
+
+app.use(cors(corsOptions)); // Appliquer la configuration CORS
 
 // Handle Uncaught exceptions
 process.on('uncaughtException', (err) => {
@@ -33,7 +35,6 @@ dotenv.config({ path: 'backend/config/config.env' });
 // Connecting to the database
 connectDatabase();
 
-app.use(cors(corsOptions)); // Appliquer la configuration CORS
 app.use(express.json({ 
     limit: "10mb",
     verify: (req, res, buf) => {
