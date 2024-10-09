@@ -16,5 +16,4 @@ const options = {
   res.status(statusCode).cookie("token", token, options).json({
     token,
   });
-  
 };

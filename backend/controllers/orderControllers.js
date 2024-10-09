@@ -5,7 +5,6 @@ import ErrorHandler from '../utils/errorHandler.js'
 
 // Create new Order => /api/v1/orders/new
 export const newOrder = catchAsyncErrors(async (req, res, next) => {
-
     const {
         orderItems,
         shippingInfo,
@@ -17,17 +16,8 @@ export const newOrder = catchAsyncErrors(async (req, res, next) => {
         paymentInfo,
     } = req.body;
 
-    // Ajoutez le champ `seller` pour chaque produit dans `orderItems`
-    const orderItemsWithSeller = await Promise.all(orderItems.map(async item => {
-        const product = await Product.findById(item.product);
-        return {
-            ...item,
-            seller: product.seller, // Assurez-vous que le produit contient un champ `seller`
-        };
-    }));
-
     const order = await Order.create({
-        orderItems: orderItemsWithSeller,
+        orderItems,
         shippingInfo,
         itemsPrice,
         taxAmount,
@@ -54,17 +44,10 @@ export const myOrders = catchAsyncErrors(async (req, res, next) => {
 
 // Get order details => /api/v1/orders/:id
 export const getOrderDetails = catchAsyncErrors(async (req, res, next) => {
-    const order = await Order.findById(req.params.id).populate("user", "name email");
+    const order = await Order.findById(req.params.id).populate("user", "name  email");
 
-    if (!order) {
+    if(!order) {
         return next(new ErrorHandler('No Order found with this ID', 404));
-    }
-
-    // Vérifiez que tous les produits de la commande appartiennent au vendeur actuel
-    const sellerOrder = order.orderItems.every(item => item.seller.toString() === req.user._id.toString());
-
-    if (!sellerOrder) {
-        return next(new ErrorHandler('You are not authorized to access this order', 403));
     }
 
     res.status(200).json({
@@ -72,17 +55,14 @@ export const getOrderDetails = catchAsyncErrors(async (req, res, next) => {
     });
 });
 
-
-// Get all orders for seller => /api/v1/admin/orders
+// Get all orders - ADMIN => /api/v1/admin/orders
 export const allOrders = catchAsyncErrors(async (req, res, next) => {
-    // Filtrer les commandes où au moins un article appartient au vendeur
-    const orders = await Order.find({ "orderItems.seller": req.user._id });
+    const orders = await Order.find();
 
     res.status(200).json({
         orders,
     });
 });
-
 
 // Update order - ADMIN => /api/v1/admin/orders/:id
 export const updateOrder = catchAsyncErrors(async (req, res, next) => {
@@ -90,11 +70,6 @@ export const updateOrder = catchAsyncErrors(async (req, res, next) => {
 
     if(!order) {
         return next(new ErrorHandler('No Order found with this ID', 404));
-    }
-
-    // Vérifiez si le vendeur de la commande est le vendeur actuel
-    if (order.seller.toString() !== req.user._id.toString()) {
-        return next(new ErrorHandler('You are not authorized to update this order', 403));
     }
 
     if(order?.orderStatus === "Delivered") {

@@ -62,7 +62,14 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
 
 // Logout User => /api/v1/logout
 export const logout = catchAsyncErrors(async (req, res, next) => {
-    res.clearCookie("token").end()
+    res.cookie("token", null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+    });
+
+    res.status(200).json({
+        message: 'Logged Out',
+    });
 });
 
 // Upload User Avatar => /api/v1/me/upload_avatar

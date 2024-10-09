@@ -28,7 +28,6 @@ export const getProducts = catchAsyncErros(async (req, res) => {
 // Create new Product => /api/v1/admin/products
 export const newProduct = catchAsyncErros(async (req, res) => {
     req.body.user = req.user._id;
-    req.body.seller = req.user._id;
 
     const product = await Product.create(req.body);
 
@@ -53,7 +52,7 @@ export const getProductDetails = catchAsyncErros(async (req, res, next) => {
 
 // Get products - ADMIN => /api/v1/admin/products
 export const getAdminProducts = catchAsyncErros(async (req, res, next) => {
-    const products = await Product.find({ seller: req.user._id });
+    const products = await Product.find();
 
     res.status(200).json({
         products,
@@ -61,16 +60,11 @@ export const getAdminProducts = catchAsyncErros(async (req, res, next) => {
 });
 
 // Update Product Details => /api/v1/products/:id
-export const updateProduct = catchAsyncErros(async (req, res, next) => {
+export const updateProduct = catchAsyncErros(async (req, res) => {
     let product = await Product.findById(req?.params?.id);
 
     if(!product) {
         return next(new ErrorHandler('Product not found', 404));
-    }
-
-    // Vérification que le user est bien le propriétaire du produit
-    if(product.user.toString() !== req.user._id.toString()) {
-        return next(new ErrorHandler('You are not authorized to delete this product', 403));
     }
 
     product = await Product.findByIdAndUpdate(req?.params?.id, req.body, { 
@@ -83,16 +77,11 @@ export const updateProduct = catchAsyncErros(async (req, res, next) => {
 });
 
 // Upload Product Images => /api/v1/admin/products/:id/upload_images
-export const uploadProductImages = catchAsyncErros(async (req, res, next) => {
+export const uploadProductImages = catchAsyncErros(async (req, res) => {
     let product = await Product.findById(req?.params?.id);
 
     if(!product) {
         return next(new ErrorHandler('Product not found', 404));
-    }
-
-    // Vérification que le user est bien le propriétaire du produit
-    if(product.user.toString() !== req.user._id.toString()) {
-        return next(new ErrorHandler('You are not authorized to upload images to this product', 403));
     }
 
     const uploader = async (image) => upload_file(image, "ritzglobal/products");
@@ -108,16 +97,11 @@ export const uploadProductImages = catchAsyncErros(async (req, res, next) => {
 });
 
 // Delete Product Image => /api/v1/admin/products/:id/delete_image
-export const deleteProductImage = catchAsyncErros(async (req, res, next) => {
+export const deleteProductImage = catchAsyncErros(async (req, res) => {
     let product = await Product.findById(req?.params?.id);
 
     if(!product) {
         return next(new ErrorHandler('Product not found', 404));
-    }
-
-    // Vérification que le user est bien le propriétaire du produit
-    if(product.user.toString() !== req.user._id.toString()) {
-        return next(new ErrorHandler('You are not authorized to delete images from this product', 403));
     }
 
     const isDeleted = await delete_file(req.body.imgId);
@@ -136,16 +120,11 @@ export const deleteProductImage = catchAsyncErros(async (req, res, next) => {
 });
 
 // Delete Product => /api/v1/products/:id
-export const deleteProduct = catchAsyncErros(async (req, res, next) => {
+export const deleteProduct = catchAsyncErros(async (req, res) => {
     const product = await Product.findById(req?.params?.id);
 
     if(!product) {
         return next(new ErrorHandler('Product not found', 404));
-    }
-
-    // Vérification que le user est bien le propriétaire du produit
-    if(product.user.toString() !== req.user._id.toString()) {
-        return next(new ErrorHandler('You are not authorized to delete this product', 403));
     }
 
     // Deleting image associated with product
