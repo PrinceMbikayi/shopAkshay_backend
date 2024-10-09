@@ -16,7 +16,7 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-    origin: ['http://localhost:3000', 'https://www.ritzglobal.org'], // URL de votre frontend
+    origin: ['http://localhost:3000', 'https://ritzglobal.org/'], // URL de votre frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true // Si vous utilisez des cookies ou des authentifications
 };
