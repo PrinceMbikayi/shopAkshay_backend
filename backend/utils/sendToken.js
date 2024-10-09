@@ -8,7 +8,7 @@ export default (user, statusCode, res) => {
           Date.now() + process.env.COOKIE_EXPIRES_TIME * 24 * 60 * 60 * 1000
       ),
       httpOnly: true,
-      //secure: process.env.NODE_ENV === "production",  // Cookie sécurisé en production
+      secure: process.env.NODE_ENV === "production",  // Cookie sécurisé en production
       sameSite: "None",    // Permet les cookies inter-domaines (frontend/backend sur différents domaines)
   };
 
