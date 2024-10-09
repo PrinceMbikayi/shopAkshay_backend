@@ -62,12 +62,6 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
 
 // Logout User => /api/v1/logout
 export const logout = catchAsyncErrors(async (req, res, next) => {
-    
-    // Vérifiez si l'utilisateur est déjà connecté
-    if (!token) {
-        return next(new ErrorHandler('You are already logged out', 400));
-    }
-    
     res.cookie("token", null, {
         expires: new Date(Date.now()),
         httpOnly: true,
