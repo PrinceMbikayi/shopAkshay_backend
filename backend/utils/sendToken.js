@@ -10,7 +10,7 @@ export default (user, statusCode, res) => {
         ),
         httpOnly: true,
         sameSite: 'none',
-        secure: process.env.ENV === 'live'
+        secure: true
     };
 
     res.status(statusCode).cookie("token", token, options).json({
